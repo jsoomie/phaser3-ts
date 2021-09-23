@@ -1,39 +1,38 @@
-import Phaser from 'phaser'
+import Phaser from "phaser";
 
-export default class HelloWorldScene extends Phaser.Scene
-{
-	constructor()
-	{
-		super('hello-world')
-	}
+// Keys
+const GROUND = "ground";
 
-	preload()
-    {
-        this.load.setBaseURL('http://labs.phaser.io')
 
-        this.load.image('sky', 'assets/skies/space3.png')
-        this.load.image('logo', 'assets/sprites/phaser3-logo.png')
-        this.load.image('red', 'assets/particles/red.png')
-    }
+export default class HelloWorldScene extends Phaser.Scene {
 
-    create()
-    {
-        this.add.image(400, 300, 'sky')
+  private platforms?: Phaser.Physics.Arcade.StaticGroup;
 
-        const particles = this.add.particles('red')
+  constructor() {
+    super("hello-world");
+  }
 
-        const emitter = particles.createEmitter({
-            speed: 100,
-            scale: { start: 1, end: 0 },
-            blendMode: 'ADD'
-        })
+  preload() {
+    this.load.image("sky", "assets/sky.png");
+    this.load.image(GROUND, "assets/platform.png");
+    this.load.image("star", "assets/star.png");
+    this.load.image("bomb", "assets/bomb.png");
+    this.load.spritesheet("dude", "assets/dude.png", {
+      frameWidth: 32,
+      frameHeight: 48,
+    });
+  }
 
-        const logo = this.physics.add.image(400, 100, 'logo')
+  create() {
+      this.add.image(400, 300, "sky");
+      this.platforms = this.physics.add.staticGroup();
+      const ground = this.platforms.create(400, 568, GROUND) as Phaser.Physics.Arcade.Sprite;
+      ground.setScale(2).refreshBody();
 
-        logo.setVelocity(100, 200)
-        logo.setBounce(1, 1)
-        logo.setCollideWorldBounds(true)
+      this.platforms.create(600, 400, GROUND);
+      this.platforms.create(50, 250, GROUND);
+      this.platforms.create(750, 220, GROUND);
+  }
 
-        emitter.startFollow(logo)
-    }
+  update() {}
 }
