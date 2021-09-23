@@ -4,16 +4,21 @@ import Phaser from "phaser";
 const GROUND = "ground";
 const DUDE = "dude";
 
+const LEFT = "left";
+const RIGHT = "right";
+const TURN = "turn";
+
 
 export default class HelloWorldScene extends Phaser.Scene {
 
   private platforms?: Phaser.Physics.Arcade.StaticGroup;
   private player?: Phaser.Physics.Arcade.Sprite;
+  private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
 
   constructor() {
     super("hello-world");
   }
-
+  
   preload() {
     this.load.image("sky", "assets/sky.png");
     this.load.image(GROUND, "assets/platform.png");
@@ -39,7 +44,7 @@ export default class HelloWorldScene extends Phaser.Scene {
       this.player.setCollideWorldBounds(true);
 
       this.anims.create({
-        key: "left",
+        key: LEFT,
         frames: this.anims.generateFrameNumbers(DUDE, {
           start: 0,
           end: 3
@@ -49,7 +54,7 @@ export default class HelloWorldScene extends Phaser.Scene {
       })
 
       this.anims.create({
-        key: "turn",
+        key: TURN,
         frames: [{
           key: DUDE,
           frame: 4
@@ -58,7 +63,7 @@ export default class HelloWorldScene extends Phaser.Scene {
       })
 
       this.anims.create({
-        key: "right",
+        key: RIGHT,
         frames: this.anims.generateFrameNumbers(DUDE, {
           start: 5,
           end: 8
@@ -68,7 +73,25 @@ export default class HelloWorldScene extends Phaser.Scene {
       })
 
       this.physics.add.collider(this.player, this.platforms);
+
+      this.cursors = this.input.keyboard.createCursorKeys();
   }
 
-  update() {}
+  update() {
+    
+    if(this.cursors?.left?.isDown) {
+      this.player?.setVelocityX(-160);
+      this.player?.anims.play(LEFT, true);
+    } else if (this.cursors?.right?.isDown) {
+      this.player?.setVelocityX(160);
+      this.player?.anims.play(RIGHT, true);
+    } else {
+      this.player?.setVelocityX(0);
+      this.player?.anims.play(TURN);
+    }
+
+    if(this.cursors?.up?.isDown && this.player?.body.touching.down) {
+      this.player.setVelocityY(-330);
+    }
+  }
 }
